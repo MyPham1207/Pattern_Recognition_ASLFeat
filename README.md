@@ -12,7 +12,14 @@ This code is just the same with the original code but have some minor changes:
 - Develop to a web app by Flask.
 
 ## 3. How to run:
-First, you need to install the require libraries:
+If you have Anaconda, you can follow these step:
+1. Create a conda environment:
+```conda create -n name```
+2. Activate that virtual environment:
+```conda activate name```
+3. Install python version 3.8:
+```pip install python=3.8```
+4. Install the require libraries:
 ```pip install -r requirements.txt```
-Then, you just need to run the app:
+5. Run the app:
 ```python app.py```
