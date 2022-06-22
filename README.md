@@ -9,7 +9,7 @@ Project title: Image matching with deep learning approach
 ## 2. About this project:
 This code is just the same with the original code but have some minor changes:
 - Update the version of tensorflow in the code.
-- Develop to a web app by Flask.
+- Develop to a web app by using Flask.
 
 ## 3. How to run:
 If you have Anaconda, you can follow these step:
