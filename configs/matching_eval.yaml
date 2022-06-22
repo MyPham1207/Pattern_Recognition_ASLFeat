@@ -1,5 +1,5 @@
-model_path: 'pretrained/aslfeat/model.ckpt-380000'
-img_paths: ['imgs/test_img1.jpg', 'imgs/test_img2.jpg']
+model_path: 'pretrained/aslfeat/model.ckpt-60000'
+img_paths: ['imgs\paris_eiffel_000135.jpg', 'imgs\paris_eiffel_000136.jpg']
 net:
   max_dim: 2048
   config:

@@ -119,13 +119,13 @@ Aux_Mb = np.array([
 
 
 def solve_DLT(pred_h4p, training, constrained=True, scale=None):
-    bs = tf.shape(pred_h4p)[0]
+    bs = tf.shape(input=pred_h4p)[0]
     if training:
         h = pred_h4p.get_shape()[1].value
         w = pred_h4p.get_shape()[2].value
     else:
-        h = tf.shape(pred_h4p)[1]
-        w = tf.shape(pred_h4p)[2]
+        h = tf.shape(input=pred_h4p)[1]
+        w = tf.shape(input=pred_h4p)[2]
 
     pts_1 = tf.constant([-1, -1, 1, -1, -1, 1, 1, 1], dtype=tf.float32)
     pts_1 = tf.reshape(pts_1, (1, 1, 1, 8, 1))
@@ -193,10 +193,10 @@ def solve_DLT(pred_h4p, training, constrained=True, scale=None):
 
     # Solve the Ax = b
     if constrained:
-        A_t_mat = tf.matrix_transpose(A_mat)
+        A_t_mat = tf.linalg.matrix_transpose(A_mat)
         A_mat = tf.matmul(A_t_mat, A_mat)
         b_mat = tf.matmul(A_t_mat, b_mat)
-        H_6el = tf.matrix_solve(A_mat, b_mat)
+        H_6el = tf.linalg.solve(A_mat, b_mat)
         H_6el = tf.squeeze(H_6el, axis=-1)
 
         if scale is not None:
@@ -211,7 +211,7 @@ def solve_DLT(pred_h4p, training, constrained=True, scale=None):
         H_6el = tf.reshape(H_6el, [bs, h, w, 3, 2])   # BATCH_SIZE x 3 x 3
         H_mat = tf.concat([H_6el, h3], axis=-1)
     else:
-        H_8el = tf.matrix_solve(A_mat, b_mat)  # BATCH_SIZE x 8.
+        H_8el = tf.linalg.solve(A_mat, b_mat)  # BATCH_SIZE x 8.
         H_8el = tf.squeeze(H_8el, axis=-1)
 
         if scale is not None:
@@ -224,11 +224,11 @@ def solve_DLT(pred_h4p, training, constrained=True, scale=None):
         H_9el = tf.concat([H_8el, h_ones], -1)
         H_mat = tf.reshape(H_9el, [bs, h, w, 3, 3])   # BATCH_SIZE x 3 x 3
 
-    has_nan = tf.reduce_sum(tf.cast(tf.math.is_nan(H_mat), tf.float32))
+    has_nan = tf.reduce_sum(input_tensor=tf.cast(tf.math.is_nan(H_mat), tf.float32))
     H_mat = tf.cond(
-        tf.equal(has_nan, 0),
-        lambda: H_mat,
-        lambda: tf.tile(tf.reshape(tf.eye(3), [1, 1, 1, 3, 3]), [bs, h, w, 1, 1])
+        pred=tf.equal(has_nan, 0),
+        true_fn=lambda: H_mat,
+        false_fn=lambda: tf.tile(tf.reshape(tf.eye(3), [1, 1, 1, 3, 3]), [bs, h, w, 1, 1])
     )
     
     return H_mat
@@ -245,8 +245,8 @@ if __name__ == "__main__":
     x = tf.reshape(x, (-1, ))
     y = tf.reshape(y, (-1, ))
     xy = tf.reshape(tf.stack([x, y], axis=-1), [1, 1, 1, -1, 2])
-    xy = tf.tile(xy, [tf.shape(H_mat)[0], tf.shape(
-        H_mat)[1], tf.shape(H_mat)[2], 1, 1])
+    xy = tf.tile(xy, [tf.shape(input=H_mat)[0], tf.shape(
+        input=H_mat)[1], tf.shape(input=H_mat)[2], 1, 1])
     xy = tf.cast(xy, tf.float32)
     ones = tf.ones_like(xy[:, :, :, :, 0])[..., None]
     xy_homo = tf.concat([xy, ones], axis=-1)
@@ -256,5 +256,5 @@ if __name__ == "__main__":
     pert_xy = pert_xy[:, :, :, :, 0:2]
     pert_xy = tf.clip_by_value(tf.math.divide_no_nan(pert_xy, homo_scale), -10., 10.)
 
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         print(sess.run(pert_xy))
