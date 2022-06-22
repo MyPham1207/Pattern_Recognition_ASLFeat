@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <h1>{% block title %} Image Matchine {% endblock %}</h1>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+    </p>
+
+    <form method="POST" action="/" enctype="multipart/form-data">
+        <dl>
+            <p>
+                <input type="file" name="files[]" multiple="true" autocomplete="off" required>
+            </p>
+        </dl>
+        <p>
+            <input type="submit" value="Submit">
+        </p>
+    </form>
+    <div style="float:left;">
+        <h2> Input images: </h2>
+        {% if filenames %}
+            <figure class="half" style="display:flex">
+            {% for filename in filenames %}
+                <div>
+                    <img src="{{ url_for('display_image', filename=filename) }}" style="border: 1px solid black;height:200px!important; margin-right: 1cm;">
+                </div>
+            {% endfor %}
+            </figure>
+        {% endif %}
+    </div>
+    <div style="float:left; margin-left: 5cm;">
+        {% if result %}
+        <h2> Output image: </h2>
+        <figure style="float: left; display: inline; margin-right: 20px; margin-bottom: 20px;">
+            <img src="{{ result }}" height="200px">
+        </figure>
+        {% endif %}
+    </div>
+{% endblock %}

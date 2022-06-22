@@ -26,12 +26,12 @@ class Evaluator(object):
         descriptors_a = tf.compat.v1.placeholder(tf.float32, (None, None), 'descriptor_a')
         descriptors_b = tf.compat.v1.placeholder(tf.float32, (None, None), 'descriptor_b')
         sim = tf.linalg.matmul(descriptors_a, descriptors_b, transpose_b=True)
-        ids1 = tf.range(0, tf.shape(sim)[0])
-        nn12 = tf.math.argmax(sim, axis=1, output_type=tf.int32)
+        ids1 = tf.range(0, tf.shape(input=sim)[0])
+        nn12 = tf.math.argmax(input=sim, axis=1, output_type=tf.int32)
         if self.mutual_check:
-            nn21 = tf.math.argmax(sim, axis=0, output_type=tf.int32)
+            nn21 = tf.math.argmax(input=sim, axis=0, output_type=tf.int32)
             mask = tf.equal(ids1, tf.gather(nn21, nn12))
-            matches = tf.stack([tf.boolean_mask(ids1, mask), tf.boolean_mask(nn12, mask)])
+            matches = tf.stack([tf.boolean_mask(tensor=ids1, mask=mask), tf.boolean_mask(tensor=nn12, mask=mask)])
         else:
             matches = tf.stack([ids1, nn12])
         return matches

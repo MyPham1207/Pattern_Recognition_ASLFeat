@@ -14,9 +14,9 @@ import progressbar
 from datasets import get_dataset
 from models import get_model
 
-FLAGS = tf.app.flags.FLAGS
+FLAGS = tf.compat.v1.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('config', None, """Path to the configuration file.""")
+tf.compat.v1.app.flags.DEFINE_string('config', None, """Path to the configuration file.""")
 
 
 def extract_feat(config):
